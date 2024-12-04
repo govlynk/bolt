@@ -1,0 +1,13 @@
+type Todo @model @auth(rules: [{allow: public, provider: apiKey, operations: [read]},
+  {allow: owner, ownerField: "owner"}])
+{
+  content: String
+  title: String
+  description: String
+  dueDate: AWSDateTime
+  estimatedEffort: Float
+  actualEffort: Float
+  tags: [String]
+  position: Int
+  assigneeId: String
+}

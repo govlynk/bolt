@@ -1,0 +1,944 @@
+type User @aws_iam @aws_cognito_user_pools {
+  cognitoId: String!
+  email: AWSEmail!
+  name: String!
+  phone: String
+  status: UserStatus
+  lastLogin: AWSDateTime
+  companies(filter: ModelUserCompanyRoleFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelUserCompanyRoleConnection
+  todos(filter: ModelTodoFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelTodoConnection
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type Company @aws_iam @aws_cognito_user_pools {
+  legalBusinessName: String!
+  dbaName: String
+  uei: String!
+  cageCode: String
+  ein: String
+  companyEmail: AWSEmail
+  companyPhoneNumber: String
+  companyWebsite: AWSURL
+  status: CompanyStatus
+  users(filter: ModelUserCompanyRoleFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelUserCompanyRoleConnection
+  teams(filter: ModelTeamFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelTeamConnection
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type Role @aws_iam @aws_cognito_user_pools {
+  name: String!
+  description: String
+  permissions: [String]
+  userCompanyRoles(filter: ModelUserCompanyRoleFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelUserCompanyRoleConnection
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type UserCompanyRole @aws_iam @aws_cognito_user_pools {
+  userId: String!
+  companyId: String!
+  roleId: String!
+  user: User
+  company: Company
+  role: Role
+  status: UserCompanyRoleStatus
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type Team @aws_iam @aws_cognito_user_pools {
+  companyId: String!
+  contactId: String!
+  role: String!
+  company: Company
+  contact: Contact
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type Contact @aws_iam @aws_cognito_user_pools {
+  firstName: String!
+  lastName: String!
+  title: String
+  department: String
+  contactEmail: AWSEmail
+  contactMobilePhone: String
+  contactBusinessPhone: String
+  workAddressStreetLine1: String
+  workAddressStreetLine2: String
+  workAddressCity: String
+  workAddressStateCode: String
+  workAddressZipCode: String
+  workAddressCountryCode: String
+  dateLastContacted: AWSDateTime
+  notes: String
+  teams(filter: ModelTeamFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelTeamConnection
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+type Todo @aws_iam @aws_cognito_user_pools {
+  title: String!
+  description: String!
+  status: TodoStatus
+  priority: TodoPriority
+  dueDate: AWSDateTime!
+  estimatedEffort: Float
+  actualEffort: Float
+  tags: [String]
+  position: Int!
+  assigneeId: String
+  assignee: User
+  id: ID!
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+  owner: String
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CompanyStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum UserCompanyRoleStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum TodoStatus {
+  TODO
+  DOING
+  DONE
+}
+
+enum TodoPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+input ConversationTurnErrorInput {
+  errorType: String!
+  message: String!
+}
+
+input ModelStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelBooleanInput {
+  ne: Boolean
+  eq: Boolean
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+}
+
+input ModelIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  attributeExists: Boolean
+  attributeType: ModelAttributeTypes
+  size: ModelSizeInput
+}
+
+input ModelSubscriptionStringInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+  in: [String]
+  notIn: [String]
+}
+
+input ModelSubscriptionIntInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+  in: [Int]
+  notIn: [Int]
+}
+
+input ModelSubscriptionFloatInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  between: [Float]
+  in: [Float]
+  notIn: [Float]
+}
+
+input ModelSubscriptionBooleanInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelSubscriptionIDInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+  in: [ID]
+  notIn: [ID]
+}
+
+enum ModelAttributeTypes {
+  binary
+  binarySet
+  bool
+  list
+  map
+  number
+  numberSet
+  string
+  stringSet
+  _null
+}
+
+input ModelSizeInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  between: [Int]
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelUserConnection @aws_iam @aws_cognito_user_pools {
+  items: [User]!
+  nextToken: String
+}
+
+input ModelUserStatusInput {
+  eq: UserStatus
+  ne: UserStatus
+}
+
+input ModelUserFilterInput {
+  cognitoId: ModelStringInput
+  email: ModelStringInput
+  name: ModelStringInput
+  phone: ModelStringInput
+  status: ModelUserStatusInput
+  lastLogin: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelUserFilterInput]
+  or: [ModelUserFilterInput]
+  not: ModelUserFilterInput
+  owner: ModelStringInput
+}
+
+type Query {
+  getUser(id: ID!): User @aws_iam @aws_cognito_user_pools
+  listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection @aws_iam @aws_cognito_user_pools
+  getCompany(id: ID!): Company @aws_iam @aws_cognito_user_pools
+  listCompanies(filter: ModelCompanyFilterInput, limit: Int, nextToken: String): ModelCompanyConnection @aws_iam @aws_cognito_user_pools
+  getRole(id: ID!): Role @aws_iam @aws_cognito_user_pools
+  listRoles(filter: ModelRoleFilterInput, limit: Int, nextToken: String): ModelRoleConnection @aws_iam @aws_cognito_user_pools
+  getUserCompanyRole(id: ID!): UserCompanyRole @aws_iam @aws_cognito_user_pools
+  listUserCompanyRoles(filter: ModelUserCompanyRoleFilterInput, limit: Int, nextToken: String): ModelUserCompanyRoleConnection @aws_iam @aws_cognito_user_pools
+  getTeam(id: ID!): Team @aws_iam @aws_cognito_user_pools
+  listTeams(filter: ModelTeamFilterInput, limit: Int, nextToken: String): ModelTeamConnection @aws_iam @aws_cognito_user_pools
+  getContact(id: ID!): Contact @aws_iam @aws_cognito_user_pools
+  listContacts(filter: ModelContactFilterInput, limit: Int, nextToken: String): ModelContactConnection @aws_iam @aws_cognito_user_pools
+  getTodo(id: ID!): Todo @aws_iam @aws_cognito_user_pools
+  listTodos(filter: ModelTodoFilterInput, limit: Int, nextToken: String): ModelTodoConnection @aws_iam @aws_cognito_user_pools
+}
+
+input ModelUserConditionInput {
+  cognitoId: ModelStringInput
+  email: ModelStringInput
+  name: ModelStringInput
+  phone: ModelStringInput
+  status: ModelUserStatusInput
+  lastLogin: ModelStringInput
+  and: [ModelUserConditionInput]
+  or: [ModelUserConditionInput]
+  not: ModelUserConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateUserInput {
+  cognitoId: String!
+  email: AWSEmail!
+  name: String!
+  phone: String
+  status: UserStatus
+  lastLogin: AWSDateTime
+  id: ID
+}
+
+input UpdateUserInput {
+  cognitoId: String
+  email: AWSEmail
+  name: String
+  phone: String
+  status: UserStatus
+  lastLogin: AWSDateTime
+  id: ID!
+}
+
+input DeleteUserInput {
+  id: ID!
+}
+
+type Mutation {
+  createUser(input: CreateUserInput!, condition: ModelUserConditionInput): User @aws_iam @aws_cognito_user_pools
+  updateUser(input: UpdateUserInput!, condition: ModelUserConditionInput): User @aws_iam @aws_cognito_user_pools
+  deleteUser(input: DeleteUserInput!, condition: ModelUserConditionInput): User @aws_iam @aws_cognito_user_pools
+  createCompany(input: CreateCompanyInput!, condition: ModelCompanyConditionInput): Company @aws_iam @aws_cognito_user_pools
+  updateCompany(input: UpdateCompanyInput!, condition: ModelCompanyConditionInput): Company @aws_iam @aws_cognito_user_pools
+  deleteCompany(input: DeleteCompanyInput!, condition: ModelCompanyConditionInput): Company @aws_iam @aws_cognito_user_pools
+  createRole(input: CreateRoleInput!, condition: ModelRoleConditionInput): Role @aws_iam @aws_cognito_user_pools
+  updateRole(input: UpdateRoleInput!, condition: ModelRoleConditionInput): Role @aws_iam @aws_cognito_user_pools
+  deleteRole(input: DeleteRoleInput!, condition: ModelRoleConditionInput): Role @aws_iam @aws_cognito_user_pools
+  createUserCompanyRole(input: CreateUserCompanyRoleInput!, condition: ModelUserCompanyRoleConditionInput): UserCompanyRole @aws_iam @aws_cognito_user_pools
+  updateUserCompanyRole(input: UpdateUserCompanyRoleInput!, condition: ModelUserCompanyRoleConditionInput): UserCompanyRole @aws_iam @aws_cognito_user_pools
+  deleteUserCompanyRole(input: DeleteUserCompanyRoleInput!, condition: ModelUserCompanyRoleConditionInput): UserCompanyRole @aws_iam @aws_cognito_user_pools
+  createTeam(input: CreateTeamInput!, condition: ModelTeamConditionInput): Team @aws_iam @aws_cognito_user_pools
+  updateTeam(input: UpdateTeamInput!, condition: ModelTeamConditionInput): Team @aws_iam @aws_cognito_user_pools
+  deleteTeam(input: DeleteTeamInput!, condition: ModelTeamConditionInput): Team @aws_iam @aws_cognito_user_pools
+  createContact(input: CreateContactInput!, condition: ModelContactConditionInput): Contact @aws_iam @aws_cognito_user_pools
+  updateContact(input: UpdateContactInput!, condition: ModelContactConditionInput): Contact @aws_iam @aws_cognito_user_pools
+  deleteContact(input: DeleteContactInput!, condition: ModelContactConditionInput): Contact @aws_iam @aws_cognito_user_pools
+  createTodo(input: CreateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_iam @aws_cognito_user_pools
+  updateTodo(input: UpdateTodoInput!, condition: ModelTodoConditionInput): Todo @aws_iam @aws_cognito_user_pools
+  deleteTodo(input: DeleteTodoInput!, condition: ModelTodoConditionInput): Todo @aws_iam @aws_cognito_user_pools
+}
+
+input ModelSubscriptionUserFilterInput {
+  cognitoId: ModelSubscriptionStringInput
+  email: ModelSubscriptionStringInput
+  name: ModelSubscriptionStringInput
+  phone: ModelSubscriptionStringInput
+  status: ModelSubscriptionStringInput
+  lastLogin: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUserFilterInput]
+  or: [ModelSubscriptionUserFilterInput]
+  owner: ModelStringInput
+}
+
+type Subscription {
+  onCreateUser(filter: ModelSubscriptionUserFilterInput, owner: String): User @aws_subscribe(mutations: ["createUser"]) @aws_iam @aws_cognito_user_pools
+  onUpdateUser(filter: ModelSubscriptionUserFilterInput, owner: String): User @aws_subscribe(mutations: ["updateUser"]) @aws_iam @aws_cognito_user_pools
+  onDeleteUser(filter: ModelSubscriptionUserFilterInput, owner: String): User @aws_subscribe(mutations: ["deleteUser"]) @aws_iam @aws_cognito_user_pools
+  onCreateCompany(filter: ModelSubscriptionCompanyFilterInput, owner: String): Company @aws_subscribe(mutations: ["createCompany"]) @aws_iam @aws_cognito_user_pools
+  onUpdateCompany(filter: ModelSubscriptionCompanyFilterInput, owner: String): Company @aws_subscribe(mutations: ["updateCompany"]) @aws_iam @aws_cognito_user_pools
+  onDeleteCompany(filter: ModelSubscriptionCompanyFilterInput, owner: String): Company @aws_subscribe(mutations: ["deleteCompany"]) @aws_iam @aws_cognito_user_pools
+  onCreateRole(filter: ModelSubscriptionRoleFilterInput): Role @aws_subscribe(mutations: ["createRole"]) @aws_iam @aws_cognito_user_pools
+  onUpdateRole(filter: ModelSubscriptionRoleFilterInput): Role @aws_subscribe(mutations: ["updateRole"]) @aws_iam @aws_cognito_user_pools
+  onDeleteRole(filter: ModelSubscriptionRoleFilterInput): Role @aws_subscribe(mutations: ["deleteRole"]) @aws_iam @aws_cognito_user_pools
+  onCreateUserCompanyRole(filter: ModelSubscriptionUserCompanyRoleFilterInput, owner: String): UserCompanyRole @aws_subscribe(mutations: ["createUserCompanyRole"]) @aws_iam @aws_cognito_user_pools
+  onUpdateUserCompanyRole(filter: ModelSubscriptionUserCompanyRoleFilterInput, owner: String): UserCompanyRole @aws_subscribe(mutations: ["updateUserCompanyRole"]) @aws_iam @aws_cognito_user_pools
+  onDeleteUserCompanyRole(filter: ModelSubscriptionUserCompanyRoleFilterInput, owner: String): UserCompanyRole @aws_subscribe(mutations: ["deleteUserCompanyRole"]) @aws_iam @aws_cognito_user_pools
+  onCreateTeam(filter: ModelSubscriptionTeamFilterInput, owner: String): Team @aws_subscribe(mutations: ["createTeam"]) @aws_iam @aws_cognito_user_pools
+  onUpdateTeam(filter: ModelSubscriptionTeamFilterInput, owner: String): Team @aws_subscribe(mutations: ["updateTeam"]) @aws_iam @aws_cognito_user_pools
+  onDeleteTeam(filter: ModelSubscriptionTeamFilterInput, owner: String): Team @aws_subscribe(mutations: ["deleteTeam"]) @aws_iam @aws_cognito_user_pools
+  onCreateContact(filter: ModelSubscriptionContactFilterInput, owner: String): Contact @aws_subscribe(mutations: ["createContact"]) @aws_iam @aws_cognito_user_pools
+  onUpdateContact(filter: ModelSubscriptionContactFilterInput, owner: String): Contact @aws_subscribe(mutations: ["updateContact"]) @aws_iam @aws_cognito_user_pools
+  onDeleteContact(filter: ModelSubscriptionContactFilterInput, owner: String): Contact @aws_subscribe(mutations: ["deleteContact"]) @aws_iam @aws_cognito_user_pools
+  onCreateTodo(filter: ModelSubscriptionTodoFilterInput, owner: String): Todo @aws_subscribe(mutations: ["createTodo"]) @aws_iam @aws_cognito_user_pools
+  onUpdateTodo(filter: ModelSubscriptionTodoFilterInput, owner: String): Todo @aws_subscribe(mutations: ["updateTodo"]) @aws_iam @aws_cognito_user_pools
+  onDeleteTodo(filter: ModelSubscriptionTodoFilterInput, owner: String): Todo @aws_subscribe(mutations: ["deleteTodo"]) @aws_iam @aws_cognito_user_pools
+}
+
+type ModelCompanyConnection @aws_iam @aws_cognito_user_pools {
+  items: [Company]!
+  nextToken: String
+}
+
+input ModelCompanyStatusInput {
+  eq: CompanyStatus
+  ne: CompanyStatus
+}
+
+input ModelCompanyFilterInput {
+  legalBusinessName: ModelStringInput
+  dbaName: ModelStringInput
+  uei: ModelStringInput
+  cageCode: ModelStringInput
+  ein: ModelStringInput
+  companyEmail: ModelStringInput
+  companyPhoneNumber: ModelStringInput
+  companyWebsite: ModelStringInput
+  status: ModelCompanyStatusInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelCompanyFilterInput]
+  or: [ModelCompanyFilterInput]
+  not: ModelCompanyFilterInput
+  owner: ModelStringInput
+}
+
+input ModelCompanyConditionInput {
+  legalBusinessName: ModelStringInput
+  dbaName: ModelStringInput
+  uei: ModelStringInput
+  cageCode: ModelStringInput
+  ein: ModelStringInput
+  companyEmail: ModelStringInput
+  companyPhoneNumber: ModelStringInput
+  companyWebsite: ModelStringInput
+  status: ModelCompanyStatusInput
+  and: [ModelCompanyConditionInput]
+  or: [ModelCompanyConditionInput]
+  not: ModelCompanyConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateCompanyInput {
+  legalBusinessName: String!
+  dbaName: String
+  uei: String!
+  cageCode: String
+  ein: String
+  companyEmail: AWSEmail
+  companyPhoneNumber: String
+  companyWebsite: AWSURL
+  status: CompanyStatus
+  id: ID
+}
+
+input UpdateCompanyInput {
+  legalBusinessName: String
+  dbaName: String
+  uei: String
+  cageCode: String
+  ein: String
+  companyEmail: AWSEmail
+  companyPhoneNumber: String
+  companyWebsite: AWSURL
+  status: CompanyStatus
+  id: ID!
+}
+
+input DeleteCompanyInput {
+  id: ID!
+}
+
+input ModelSubscriptionCompanyFilterInput {
+  legalBusinessName: ModelSubscriptionStringInput
+  dbaName: ModelSubscriptionStringInput
+  uei: ModelSubscriptionStringInput
+  cageCode: ModelSubscriptionStringInput
+  ein: ModelSubscriptionStringInput
+  companyEmail: ModelSubscriptionStringInput
+  companyPhoneNumber: ModelSubscriptionStringInput
+  companyWebsite: ModelSubscriptionStringInput
+  status: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionCompanyFilterInput]
+  or: [ModelSubscriptionCompanyFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelRoleConnection @aws_iam @aws_cognito_user_pools {
+  items: [Role]!
+  nextToken: String
+}
+
+input ModelRoleFilterInput {
+  name: ModelStringInput
+  description: ModelStringInput
+  permissions: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelRoleFilterInput]
+  or: [ModelRoleFilterInput]
+  not: ModelRoleFilterInput
+}
+
+input ModelRoleConditionInput {
+  name: ModelStringInput
+  description: ModelStringInput
+  permissions: ModelStringInput
+  and: [ModelRoleConditionInput]
+  or: [ModelRoleConditionInput]
+  not: ModelRoleConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+}
+
+input CreateRoleInput {
+  name: String!
+  description: String
+  permissions: [String]
+  id: ID
+}
+
+input UpdateRoleInput {
+  name: String
+  description: String
+  permissions: [String]
+  id: ID!
+}
+
+input DeleteRoleInput {
+  id: ID!
+}
+
+input ModelSubscriptionRoleFilterInput {
+  name: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  permissions: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionRoleFilterInput]
+  or: [ModelSubscriptionRoleFilterInput]
+}
+
+type ModelUserCompanyRoleConnection @aws_iam @aws_cognito_user_pools {
+  items: [UserCompanyRole]!
+  nextToken: String
+}
+
+input ModelUserCompanyRoleStatusInput {
+  eq: UserCompanyRoleStatus
+  ne: UserCompanyRoleStatus
+}
+
+input ModelUserCompanyRoleFilterInput {
+  userId: ModelStringInput
+  companyId: ModelStringInput
+  roleId: ModelStringInput
+  status: ModelUserCompanyRoleStatusInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelUserCompanyRoleFilterInput]
+  or: [ModelUserCompanyRoleFilterInput]
+  not: ModelUserCompanyRoleFilterInput
+  owner: ModelStringInput
+}
+
+input ModelUserCompanyRoleConditionInput {
+  userId: ModelStringInput
+  companyId: ModelStringInput
+  roleId: ModelStringInput
+  status: ModelUserCompanyRoleStatusInput
+  and: [ModelUserCompanyRoleConditionInput]
+  or: [ModelUserCompanyRoleConditionInput]
+  not: ModelUserCompanyRoleConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateUserCompanyRoleInput {
+  userId: String!
+  companyId: String!
+  roleId: String!
+  status: UserCompanyRoleStatus
+  id: ID
+}
+
+input UpdateUserCompanyRoleInput {
+  userId: String
+  companyId: String
+  roleId: String
+  status: UserCompanyRoleStatus
+  id: ID!
+}
+
+input DeleteUserCompanyRoleInput {
+  id: ID!
+}
+
+input ModelSubscriptionUserCompanyRoleFilterInput {
+  userId: ModelSubscriptionStringInput
+  companyId: ModelSubscriptionStringInput
+  roleId: ModelSubscriptionStringInput
+  status: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionUserCompanyRoleFilterInput]
+  or: [ModelSubscriptionUserCompanyRoleFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelTeamConnection @aws_iam @aws_cognito_user_pools {
+  items: [Team]!
+  nextToken: String
+}
+
+input ModelTeamFilterInput {
+  companyId: ModelStringInput
+  contactId: ModelStringInput
+  role: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTeamFilterInput]
+  or: [ModelTeamFilterInput]
+  not: ModelTeamFilterInput
+  owner: ModelStringInput
+}
+
+input ModelTeamConditionInput {
+  companyId: ModelStringInput
+  contactId: ModelStringInput
+  role: ModelStringInput
+  and: [ModelTeamConditionInput]
+  or: [ModelTeamConditionInput]
+  not: ModelTeamConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateTeamInput {
+  companyId: String!
+  contactId: String!
+  role: String!
+  id: ID
+}
+
+input UpdateTeamInput {
+  companyId: String
+  contactId: String
+  role: String
+  id: ID!
+}
+
+input DeleteTeamInput {
+  id: ID!
+}
+
+input ModelSubscriptionTeamFilterInput {
+  companyId: ModelSubscriptionStringInput
+  contactId: ModelSubscriptionStringInput
+  role: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTeamFilterInput]
+  or: [ModelSubscriptionTeamFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelContactConnection @aws_iam @aws_cognito_user_pools {
+  items: [Contact]!
+  nextToken: String
+}
+
+input ModelContactFilterInput {
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  title: ModelStringInput
+  department: ModelStringInput
+  contactEmail: ModelStringInput
+  contactMobilePhone: ModelStringInput
+  contactBusinessPhone: ModelStringInput
+  workAddressStreetLine1: ModelStringInput
+  workAddressStreetLine2: ModelStringInput
+  workAddressCity: ModelStringInput
+  workAddressStateCode: ModelStringInput
+  workAddressZipCode: ModelStringInput
+  workAddressCountryCode: ModelStringInput
+  dateLastContacted: ModelStringInput
+  notes: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelContactFilterInput]
+  or: [ModelContactFilterInput]
+  not: ModelContactFilterInput
+  owner: ModelStringInput
+}
+
+input ModelContactConditionInput {
+  firstName: ModelStringInput
+  lastName: ModelStringInput
+  title: ModelStringInput
+  department: ModelStringInput
+  contactEmail: ModelStringInput
+  contactMobilePhone: ModelStringInput
+  contactBusinessPhone: ModelStringInput
+  workAddressStreetLine1: ModelStringInput
+  workAddressStreetLine2: ModelStringInput
+  workAddressCity: ModelStringInput
+  workAddressStateCode: ModelStringInput
+  workAddressZipCode: ModelStringInput
+  workAddressCountryCode: ModelStringInput
+  dateLastContacted: ModelStringInput
+  notes: ModelStringInput
+  and: [ModelContactConditionInput]
+  or: [ModelContactConditionInput]
+  not: ModelContactConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateContactInput {
+  firstName: String!
+  lastName: String!
+  title: String
+  department: String
+  contactEmail: AWSEmail
+  contactMobilePhone: String
+  contactBusinessPhone: String
+  workAddressStreetLine1: String
+  workAddressStreetLine2: String
+  workAddressCity: String
+  workAddressStateCode: String
+  workAddressZipCode: String
+  workAddressCountryCode: String
+  dateLastContacted: AWSDateTime
+  notes: String
+  id: ID
+}
+
+input UpdateContactInput {
+  firstName: String
+  lastName: String
+  title: String
+  department: String
+  contactEmail: AWSEmail
+  contactMobilePhone: String
+  contactBusinessPhone: String
+  workAddressStreetLine1: String
+  workAddressStreetLine2: String
+  workAddressCity: String
+  workAddressStateCode: String
+  workAddressZipCode: String
+  workAddressCountryCode: String
+  dateLastContacted: AWSDateTime
+  notes: String
+  id: ID!
+}
+
+input DeleteContactInput {
+  id: ID!
+}
+
+input ModelSubscriptionContactFilterInput {
+  firstName: ModelSubscriptionStringInput
+  lastName: ModelSubscriptionStringInput
+  title: ModelSubscriptionStringInput
+  department: ModelSubscriptionStringInput
+  contactEmail: ModelSubscriptionStringInput
+  contactMobilePhone: ModelSubscriptionStringInput
+  contactBusinessPhone: ModelSubscriptionStringInput
+  workAddressStreetLine1: ModelSubscriptionStringInput
+  workAddressStreetLine2: ModelSubscriptionStringInput
+  workAddressCity: ModelSubscriptionStringInput
+  workAddressStateCode: ModelSubscriptionStringInput
+  workAddressZipCode: ModelSubscriptionStringInput
+  workAddressCountryCode: ModelSubscriptionStringInput
+  dateLastContacted: ModelSubscriptionStringInput
+  notes: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionContactFilterInput]
+  or: [ModelSubscriptionContactFilterInput]
+  owner: ModelStringInput
+}
+
+type ModelTodoConnection @aws_iam @aws_cognito_user_pools {
+  items: [Todo]!
+  nextToken: String
+}
+
+input ModelTodoStatusInput {
+  eq: TodoStatus
+  ne: TodoStatus
+}
+
+input ModelTodoPriorityInput {
+  eq: TodoPriority
+  ne: TodoPriority
+}
+
+input ModelTodoFilterInput {
+  title: ModelStringInput
+  description: ModelStringInput
+  status: ModelTodoStatusInput
+  priority: ModelTodoPriorityInput
+  dueDate: ModelStringInput
+  estimatedEffort: ModelFloatInput
+  actualEffort: ModelFloatInput
+  tags: ModelStringInput
+  position: ModelIntInput
+  assigneeId: ModelStringInput
+  id: ModelIDInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  and: [ModelTodoFilterInput]
+  or: [ModelTodoFilterInput]
+  not: ModelTodoFilterInput
+  owner: ModelStringInput
+}
+
+input ModelTodoConditionInput {
+  title: ModelStringInput
+  description: ModelStringInput
+  status: ModelTodoStatusInput
+  priority: ModelTodoPriorityInput
+  dueDate: ModelStringInput
+  estimatedEffort: ModelFloatInput
+  actualEffort: ModelFloatInput
+  tags: ModelStringInput
+  position: ModelIntInput
+  assigneeId: ModelStringInput
+  and: [ModelTodoConditionInput]
+  or: [ModelTodoConditionInput]
+  not: ModelTodoConditionInput
+  createdAt: ModelStringInput
+  updatedAt: ModelStringInput
+  owner: ModelStringInput
+}
+
+input CreateTodoInput {
+  title: String!
+  description: String!
+  status: TodoStatus
+  priority: TodoPriority
+  dueDate: AWSDateTime!
+  estimatedEffort: Float
+  actualEffort: Float
+  tags: [String]
+  position: Int!
+  assigneeId: String
+  id: ID
+}
+
+input UpdateTodoInput {
+  title: String
+  description: String
+  status: TodoStatus
+  priority: TodoPriority
+  dueDate: AWSDateTime
+  estimatedEffort: Float
+  actualEffort: Float
+  tags: [String]
+  position: Int
+  assigneeId: String
+  id: ID!
+}
+
+input DeleteTodoInput {
+  id: ID!
+}
+
+input ModelSubscriptionTodoFilterInput {
+  title: ModelSubscriptionStringInput
+  description: ModelSubscriptionStringInput
+  status: ModelSubscriptionStringInput
+  priority: ModelSubscriptionStringInput
+  dueDate: ModelSubscriptionStringInput
+  estimatedEffort: ModelSubscriptionFloatInput
+  actualEffort: ModelSubscriptionFloatInput
+  tags: ModelSubscriptionStringInput
+  position: ModelSubscriptionIntInput
+  assigneeId: ModelSubscriptionStringInput
+  id: ModelSubscriptionIDInput
+  createdAt: ModelSubscriptionStringInput
+  updatedAt: ModelSubscriptionStringInput
+  and: [ModelSubscriptionTodoFilterInput]
+  or: [ModelSubscriptionTodoFilterInput]
+  owner: ModelStringInput
+}

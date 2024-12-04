@@ -1,0 +1,123 @@
+type User @model @auth(rules: [{allow: owner, ownerField: "owner"},
+  {allow: groups, operations: [create, read, update, delete], groups: ["Admin"]}])
+{
+  cognitoId: String!
+  email: AWSEmail!
+  name: String!
+  phone: String
+  status: UserStatus
+  lastLogin: AWSDateTime
+  companies: [UserCompanyRole] @hasMany(references: ["userId"])
+  todos: [Todo] @hasMany(references: ["assigneeId"])
+}
+
+type Company @model @auth(rules: [{allow: owner, ownerField: "owner"},
+  {allow: groups, operations: [create, read, update, delete], groups: ["Admin"]}])
+{
+  legalBusinessName: String!
+  dbaName: String
+  uei: String!
+  cageCode: String
+  ein: String
+  companyEmail: AWSEmail
+  companyPhoneNumber: String
+  companyWebsite: AWSURL
+  status: CompanyStatus
+  users: [UserCompanyRole] @hasMany(references: ["companyId"])
+  teams: [Team] @hasMany(references: ["companyId"])
+}
+
+type Role @model @auth(rules: [{allow: groups, operations: [create, read, update, delete], groups: ["Admin"]}])
+{
+  name: String!
+  description: String
+  permissions: [String]
+  userCompanyRoles: [UserCompanyRole] @hasMany(references: ["roleId"])
+}
+
+type UserCompanyRole @model @auth(rules: [{allow: owner, ownerField: "owner"},
+  {allow: groups, operations: [create, read, update, delete], groups: ["Admin"]}])
+{
+  userId: String!
+  companyId: String!
+  roleId: String!
+  user: User @belongsTo(references: ["userId"])
+  company: Company @belongsTo(references: ["companyId"])
+  role: Role @belongsTo(references: ["roleId"])
+  status: UserCompanyRoleStatus
+}
+
+type Team @model @auth(rules: [{allow: owner, ownerField: "owner"},
+  {allow: groups, operations: [create, read, update, delete], groups: ["Admin"]}])
+{
+  companyId: String!
+  contactId: String!
+  role: String!
+  company: Company @belongsTo(references: ["companyId"])
+  contact: Contact @belongsTo(references: ["contactId"])
+}
+
+type Contact @model @auth(rules: [{allow: owner, ownerField: "owner"},
+  {allow: groups, operations: [create, read, update, delete], groups: ["Admin"]}])
+{
+  firstName: String!
+  lastName: String!
+  title: String
+  department: String
+  contactEmail: AWSEmail
+  contactMobilePhone: String
+  contactBusinessPhone: String
+  workAddressStreetLine1: String
+  workAddressStreetLine2: String
+  workAddressCity: String
+  workAddressStateCode: String
+  workAddressZipCode: String
+  workAddressCountryCode: String
+  dateLastContacted: AWSDateTime
+  notes: String
+  teams: [Team] @hasMany(references: ["contactId"])
+}
+
+type Todo @model @auth(rules: [{allow: owner, ownerField: "owner"},
+  {allow: groups, operations: [create, read, update, delete], groups: ["Admin"]}])
+{
+  title: String!
+  description: String!
+  status: TodoStatus
+  priority: TodoPriority
+  dueDate: AWSDateTime!
+  estimatedEffort: Float
+  actualEffort: Float
+  tags: [String]
+  position: Int!
+  assigneeId: String
+  assignee: User @belongsTo(references: ["assigneeId"])
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum CompanyStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+}
+
+enum UserCompanyRoleStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum TodoStatus {
+  TODO
+  DOING
+  DONE
+}
+
+enum TodoPriority {
+  LOW
+  MEDIUM
+  HIGH
+}

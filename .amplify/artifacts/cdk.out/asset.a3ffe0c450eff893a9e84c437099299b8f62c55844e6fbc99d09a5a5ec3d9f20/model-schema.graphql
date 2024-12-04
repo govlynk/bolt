@@ -1,0 +1,19 @@
+type Todo @model @auth(rules: [{allow: public, provider: apiKey}])
+{
+  content: String
+  title: String
+  description: String
+  dueDate: AWSDateTime
+  estimatedEffort: Float
+  actualEffort: Float
+  tags: [String]
+  position: Int
+  assigneeId: String
+  privacySetting: TodoPrivacySetting
+}
+
+enum TodoPrivacySetting {
+  PRIVATE
+  FRIENDS_ONLY
+  PUBLIC
+}
