@@ -18,6 +18,27 @@ const COMPANY_ROLES = [
 ] as const;
 
 const schema = a.schema({
+	Opportunity: a
+		.model({
+			opportunityId: a.string().required(),
+			title: a.string().required(),
+			description: a.string(),
+			agency: a.string(),
+			dueDate: a.datetime(),
+			savedBy: a.string().required(),
+			savedDate: a.datetime().required(),
+			activeCompany: a.string().required(),
+			activeTeam: a.string().required(),
+			status: a.enum(["BACKLOG", "BID", "REVIEW", "SUBMITTED", "WON", "LOST"]).required(),
+			bidProgress: a.integer(),
+			notes: a.string(),
+			attachments: a.string().array(),
+			user: a.belongsTo("User", "savedBy"),
+			company: a.belongsTo("Company", "activeCompany"),
+			team: a.belongsTo("Team", "activeTeam"),
+		})
+		.authorization((allow) => [allow.owner(), allow.group("Admin").to(["create", "read", "update", "delete"])]),
+
 	User: a
 		.model({
 			cognitoId: a.string().required(),

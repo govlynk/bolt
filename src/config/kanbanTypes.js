@@ -14,8 +14,8 @@ export const DEFAULT_BOARDS = {
 				tasks: [],
 			},
 			inProgress: {
-				id: "inProgress",
-				title: "In Progress",
+				id: "doing",
+				title: "DOing",
 				tasks: [],
 			},
 			done: {

@@ -1,91 +1,137 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 import { generateClient } from "aws-amplify/data";
-import { getOpportunity } from "../utils/opportunityApi";
 
 const client = generateClient();
 
-export const useOpportunityStore = create(
-	persist(
-		(set, get) => ({
-			opportunities: [],
-			savedOpportunities: [],
-			rejectedOpportunities: [],
-			lastRetrievedDate: null,
-			loading: false,
-			error: null,
+const BOARD_CONFIG = {
+	columns: {
+		BACKLOG: {
+			id: "BACKLOG",
+			title: "Backlog",
+			limit: 50,
+		},
+		BID: {
+			id: "BID",
+			title: "Preparing Bid",
+			limit: 10,
+		},
+		REVIEW: {
+			id: "REVIEW",
+			title: "In Review",
+			limit: 5,
+		},
+		SUBMITTED: {
+			id: "SUBMITTED",
+			title: "Submitted",
+			limit: null,
+		},
+		WON: {
+			id: "WON",
+			title: "Won",
+			limit: null,
+		},
+		LOST: {
+			id: "LOST",
+			title: "Lost",
+			limit: null,
+		},
+	},
+};
 
-			fetchOpportunities: async (params) => {
-				set({ loading: true, error: null });
-				try {
-					const response = await getOpportunity(params);
+export const useOpportunityStore = create((set, get) => ({
+	opportunities: [],
+	loading: false,
+	error: null,
+	boardConfig: BOARD_CONFIG,
+	subscription: null,
 
-					console.log("Opportunities:", response);
-					// Filter out previously rejected opportunities
-					const rejectedIds = get().rejectedOpportunities.map((opp) => opp.noticeId);
-					const filteredOpportunities = response.filter((opp) => !rejectedIds.includes(opp.noticeId));
+	fetchOpportunities: async (companyId) => {
+		if (!companyId) {
+			set({ error: "Company ID is required", loading: false });
+			return;
+		}
 
+		// Cleanup existing subscription
+		const currentSub = get().subscription;
+		if (currentSub) {
+			currentSub.unsubscribe();
+		}
+
+		set({ loading: true });
+		try {
+			const subscription = client.models.Opportunity.observeQuery({
+				filter: { activeCompany: { eq: companyId } },
+			}).subscribe({
+				next: ({ items }) => {
 					set({
-						opportunities: filteredOpportunities,
-						lastRetrievedDate: new Date().toISOString(),
+						opportunities: items,
+						loading: false,
+						error: null,
+					});
+				},
+				error: (err) => {
+					console.error("Error in opportunity subscription:", err);
+					set({
+						error: err.message || "Failed to fetch opportunities",
 						loading: false,
 					});
+				},
+			});
 
-					return filteredOpportunities;
-				} catch (err) {
-					console.error("Error fetching opportunities:", err);
-					set({ error: err.message, loading: false });
-					throw err;
-				}
-			},
-
-			saveOpportunity: async (opportunity) => {
-				try {
-					const savedOpp = {
-						...opportunity,
-						savedAt: new Date().toISOString(),
-						status: "saved",
-					};
-
-					set((state) => ({
-						savedOpportunities: [...state.savedOpportunities, savedOpp],
-						opportunities: state.opportunities.filter((opp) => opp.noticeId !== opportunity.noticeId),
-					}));
-				} catch (err) {
-					console.error("Error saving opportunity:", err);
-					throw err;
-				}
-			},
-
-			rejectOpportunity: async (opportunity) => {
-				try {
-					const rejectedOpp = {
-						...opportunity,
-						rejectedAt: new Date().toISOString(),
-						status: "rejected",
-					};
-
-					set((state) => ({
-						rejectedOpportunities: [...state.rejectedOpportunities, rejectedOpp],
-						opportunities: state.opportunities.filter((opp) => opp.noticeId !== opportunity.noticeId),
-					}));
-				} catch (err) {
-					console.error("Error rejecting opportunity:", err);
-					throw err;
-				}
-			},
-
-			clearOpportunities: () => {
-				set({ opportunities: [], error: null });
-			},
-		}),
-		{
-			name: "opportunity-storage",
-			partialize: (state) => ({
-				savedOpportunities: state.savedOpportunities,
-				rejectedOpportunities: state.rejectedOpportunities,
-				lastRetrievedDate: state.lastRetrievedDate,
-			}),
+			set({ subscription });
+		} catch (err) {
+			console.error("Error setting up opportunity subscription:", err);
+			set({
+				error: err.message || "Failed to load opportunities",
+				loading: false,
+			});
 		}
-	)
-);
+	},
+
+	moveOpportunity: async (opportunityId, newStatus) => {
+		const opportunity = get().opportunities.find((opp) => opp.id === opportunityId);
+		if (!opportunity) return;
+
+		try {
+			const updatedOpportunity = await client.models.Opportunity.update({
+				id: opportunityId,
+				status: newStatus,
+			});
+
+			return updatedOpportunity;
+		} catch (err) {
+			console.error("Error moving opportunity:", err);
+			throw err;
+		}
+	},
+
+	updateOpportunity: async (id, updates) => {
+		const opportunity = get().opportunities.find((opp) => opp.id === id);
+		if (!opportunity) return;
+
+		try {
+			const updatedOpportunity = await client.models.Opportunity.update({
+				id,
+				...updates,
+			});
+
+			return updatedOpportunity;
+		} catch (err) {
+			console.error("Error updating opportunity:", err);
+			throw err;
+		}
+	},
+
+	cleanup: () => {
+		const { subscription } = get();
+		if (subscription) {
+			subscription.unsubscribe();
+		}
+		set({
+			opportunities: [],
+			loading: false,
+			error: null,
+			subscription: null,
+		});
+	},
+}));
