@@ -20,16 +20,16 @@ const COMPANY_ROLES = [
 const schema = a.schema({
 	Opportunity: a
 		.model({
-			opportunityId: a.string().required(),
-			title: a.string().required(),
+			opportunityId: a.string(),
+			title: a.string(),
 			description: a.string(),
 			agency: a.string(),
 			dueDate: a.datetime(),
-			savedBy: a.string().required(),
-			savedDate: a.datetime().required(),
-			activeCompany: a.string().required(),
-			activeTeam: a.string().required(),
-			status: a.enum(["BACKLOG", "BID", "REVIEW", "SUBMITTED", "WON", "LOST"]).required(),
+			savedBy: a.string(),
+			savedDate: a.datetime(),
+			activeCompany: a.string(),
+			activeTeam: a.string(),
+			status: a.enum(["BACKLOG", "BID", "REVIEW", "SUBMITTED", "WON", "LOST"]),
 			bidProgress: a.integer(),
 			notes: a.string(),
 			attachments: a.string().array(),
