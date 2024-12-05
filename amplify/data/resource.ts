@@ -118,7 +118,7 @@ const schema = a.schema({
 			companyId: a.string().required(),
 			company: a.belongsTo("Company", "companyId"),
 			members: a.hasMany("TeamMember", "teamId"),
-			opportunities: a.hasMany("Opportunity", "companyId"),
+			opportunities: a.hasMany("Opportunity", "teamId"),
 			todos: a.hasMany("Todo", "teamId"),
 		})
 		.authorization((allow) => [allow.owner(), allow.group("Admin").to(["create", "read", "update", "delete"])]),
