@@ -105,6 +105,7 @@ const schema = a.schema({
 			pscCode: a.string().array(),
 			sbaBusinessTypeDesc: a.string().array(),
 			entityURL: a.url(),
+			opportunities: a.hasMany("Opportunity", "companyId"),
 			users: a.hasMany("UserCompanyRole", "companyId"),
 			teams: a.hasMany("Team", "companyId"),
 		})
@@ -117,6 +118,7 @@ const schema = a.schema({
 			companyId: a.string().required(),
 			company: a.belongsTo("Company", "companyId"),
 			members: a.hasMany("TeamMember", "teamId"),
+			opportunities: a.hasMany("Opportunity", "companyId"),
 			todos: a.hasMany("Todo", "teamId"),
 		})
 		.authorization((allow) => [allow.owner(), allow.group("Admin").to(["create", "read", "update", "delete"])]),
