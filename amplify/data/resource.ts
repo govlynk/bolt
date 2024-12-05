@@ -47,6 +47,7 @@ const schema = a.schema({
 			status: a.enum(["ACTIVE", "INACTIVE"]),
 			lastLogin: a.datetime(),
 			avatar: a.url(),
+			opportunities: a.hasMany("Opportunity", "userId"),
 			companies: a.hasMany("UserCompanyRole", "userId"),
 			todos: a.hasMany("Todo", "assigneeId"),
 		})
