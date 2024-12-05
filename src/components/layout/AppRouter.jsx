@@ -13,7 +13,7 @@ const AppRouter = ({ signOut, user }) => {
 				<Route index element={<TodoScreen />} />
 				<Route path='todos' element={<TodoScreen />} />
 				<Route path='opportunities' element={<OpportunitiesScreen />} />
-				<Route path='pipeline' element={<PipelinesScreen />} />
+				<Route path='pipeline' element={<PipelineScreen />} />
 				<Route path='*' element={<NotFoundPage />} />
 			</Route>
 		</Routes>
