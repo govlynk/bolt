@@ -60,7 +60,7 @@ export const useOpportunityStore = create((set, get) => ({
 		set({ loading: true });
 		try {
 			const subscription = client.models.Opportunity.observeQuery({
-				filter: { activeCompany: { eq: companyId } },
+				filter: { companyId: { eq: companyId } },
 			}).subscribe({
 				next: ({ items }) => {
 					set({
