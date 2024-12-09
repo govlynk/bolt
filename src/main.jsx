@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Amplify } from "aws-amplify";
 import { Authenticator } from "@aws-amplify/ui-react";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "./context/ThemeContext";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 // import "./index.css";
@@ -18,7 +20,10 @@ createRoot(rootElement).render(
 	<StrictMode>
 		<BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
 			<Authenticator.Provider>
-				<App />
+				<ThemeProvider>
+					<CssBaseline />
+					<App />
+				</ThemeProvider>
 			</Authenticator.Provider>
 		</BrowserRouter>
 	</StrictMode>

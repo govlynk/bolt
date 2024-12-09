@@ -33,7 +33,9 @@ export default function MainLayout({ signOut }) {
 						flexGrow: 1,
 						p: 3,
 						overflow: "auto",
-						backgroundColor: theme.palette.background.default,
+						// backgroundColor: theme.palette.background.default,
+						background: (theme) =>
+							theme.palette.mode === "dark" ? "linear-gradient(90deg, #016996 0%, #012f55 100%)" : "#bcd1f8",
 					}}
 				>
 					<Outlet />

@@ -3,9 +3,10 @@ import { persist } from "zustand/middleware";
 
 export const useTeamTodoStore = create(
 	persist(
-		(set) => ({
+		(set, get) => ({
 			selectedTeamId: "all",
 			setSelectedTeamId: (teamId) => set({ selectedTeamId: teamId }),
+			getSelectedTeamId: () => get().selectedTeamId,
 		}),
 		{
 			name: "team-todo-storage",

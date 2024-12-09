@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "aws-amplify/auth";
 import { CompanySwitcher } from "./CompanySwitcher";
 import { TeamSelector } from "./TeamSelector";
+import ThemeToggle from "./ThemeToggle";
 import { useAuthStore } from "../../stores/authStore";
 
 function stringToColor(string) {
@@ -104,7 +105,8 @@ export default function TopBar() {
 				)}
 
 				<Box sx={{ flexGrow: 1 }} />
-
+				<Box sx={{ display: "flex", alignItems: "center", gap: 1 }}></Box>
+				<ThemeToggle />
 				{user && (
 					<Box sx={{ display: "flex", alignItems: "center" }}>
 						<IconButton

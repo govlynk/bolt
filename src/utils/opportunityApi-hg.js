@@ -1,15 +1,5 @@
 import axios from "axios";
 
-const formatQueryParams = (params) => {
-	if (!params || Object.keys(params).length === 0) {
-		return "";
-	}
-
-	return Object.entries(params)
-		.map(([key, value]) => `${value}`)
-		.join("&");
-};
-
 const processOpportunityData = (opportunity) => {
 	if (!opportunity) return null;
 
@@ -22,13 +12,30 @@ const processOpportunityData = (opportunity) => {
 };
 
 export async function getOpportunity(searchParams) {
-	if (!import.meta.env.VITE_SAM_API_KEY) {
-		throw new Error("SAM API key is not configured");
+	if (!import.meta.env.VITE_HG_API_KEY) {
+		throw new Error("HighrGov API key is not configured");
 	}
 
-	const api_key = `api_key=${import.meta.env.VITE_SAM_API_KEY}`;
-	const queryString = formatQueryParams(searchParams);
-	const apiUrl = `https://api.sam.gov/opportunities/v2/search?${api_key}${queryString ? "&" + queryString : ""}`;
+	// ****************************
+	// Define the Endpoint and Key
+	const endpoint = "https://www.highergov.com/api-external/opportunity/";
+	const api_key = import.meta.env.VITE_HG_API_KEY;
+
+	// Define Parameters
+	let params = {
+		last_modified_date: "2023-07-06",
+		search_id: "z9zi90apiU_Zyl3T2CUZa",
+		page_number: "1",
+	};
+
+	// Convert parameters to URL query string
+	let query = Object.keys(searchParams)
+		.map((k) => `${encodeURIComponent(k)}=${encodeURIComponent(searchParams[k])}`)
+		.join("&");
+
+	const apiUrl = `${endpoint}?api_key=${api_key}&${query}`;
+
+	// ****************************
 
 	const maxRetries = 3;
 	let lastError;
@@ -42,15 +49,13 @@ export async function getOpportunity(searchParams) {
 				},
 			});
 
-			if (!response.data?.opportunitiesData) {
+			console.log("Response", response);
+			if (!response.results?.Opportunity) {
 				return [];
 			}
 
 			// Process and sanitize each opportunity
-			const processedData = response.data.opportunitiesData
-				.filter(Boolean)
-				.map(processOpportunityData)
-				.filter(Boolean);
+			const processedData = response.results.Opportunity.filter(Boolean).map(processOpportunityData).filter(Boolean);
 			return processedData;
 		} catch (error) {
 			if (error.response?.status !== 429) {

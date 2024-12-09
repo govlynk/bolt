@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Opportunity API with CORS configuration
+
+Globals:
+  Function:
+    Runtime: nodejs18.x
+    Timeout: 30
+    MemorySize: 128
+    Environment:
+      Variables:
+        NODE_ENV: !Ref Environment
+        SAM_API_KEY: !Ref SamApiKey
+
+Parameters:
+  Environment:
+    Type: String
+    Default: development
+    AllowedValues:
+      - development
+      - production
+  SamApiKey:
+    Type: String
+    NoEcho: true
+    Description: SAM.gov API Key
+
+Resources:
+  OpportunityApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: !Sub "'${AllowedOrigin}'"
+        MaxAge: "'600'"
+        AllowCredentials: true
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt UserPool.Arn
+
+  OpportunityFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: index.handler
+      Events:
+        GetOpportunities:
+          Type: Api
+          Properties:
+            Path: /opportunities
+            Method: get
+            RestApiId: !Ref OpportunityApi
+        SearchOpportunities:
+          Type: Api
+          Properties:
+            Path: /opportunities/search
+            Method: post
+            RestApiId: !Ref OpportunityApi
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${OpportunityApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/

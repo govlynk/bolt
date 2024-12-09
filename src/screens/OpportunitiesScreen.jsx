@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, Tabs, Tab, Alert, CircularProgress } from "@mui/material";
+import { Box, Typography, Tabs, Tab, Alert } from "@mui/material";
 import { OpportunityList } from "../components/opportunities/OpportunityList";
 import { OpportunitySearch } from "../components/opportunities/OpportunitySearch";
 import { useOpportunityStore } from "../stores/opportunityStore";
@@ -7,7 +7,7 @@ import { useUserCompanyStore } from "../stores/userCompanyStore";
 
 export default function OpportunitiesScreen() {
 	const [activeTab, setActiveTab] = React.useState(0);
-	const { opportunities, savedOpportunities, rejectedOpportunities } = useOpportunityStore();
+	const { opportunities = [], savedOpportunities = [], rejectedOpportunities = [] } = useOpportunityStore();
 	const { getActiveCompany } = useUserCompanyStore();
 	const activeCompany = getActiveCompany();
 
@@ -37,17 +37,10 @@ export default function OpportunitiesScreen() {
 				<Tab label={`Rejected (${rejectedOpportunities.length})`} id='opportunities-tab-2' />
 			</Tabs>
 
-			<Box role='tabpanel' hidden={activeTab !== 0}>
-				{activeTab === 0 && <OpportunityList opportunities={opportunities} />}
-			</Box>
-
-			<Box role='tabpanel' hidden={activeTab !== 1}>
-				{activeTab === 1 && <OpportunityList opportunities={savedOpportunities} />}
-			</Box>
-
-			<Box role='tabpanel' hidden={activeTab !== 2}>
-				{activeTab === 2 && <OpportunityList opportunities={rejectedOpportunities} />}
-			</Box>
+			{/* Render the appropriate list based on the active tab */}
+			{activeTab === 0 && <OpportunityList opportunities={opportunities} />}
+			{activeTab === 1 && <OpportunityList opportunities={savedOpportunities} />}
+			{activeTab === 2 && <OpportunityList opportunities={rejectedOpportunities} />}
 		</Box>
 	);
 }
