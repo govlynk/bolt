@@ -24,9 +24,12 @@ const CalendarScreen = () => {
 	const [selectedSlot, setSelectedSlot] = useState(null);
 
 	const handleAddEvent = () => {
+		const now = new Date();
+		const oneHourFromNow = new Date(now.getTime() + 3600000); // 1 hour from now
+
 		setSelectedSlot({
-			start: new Date(),
-			end: new Date(Date.now() + 3600000), // 1 hour from now
+			start: now,
+			end: oneHourFromNow,
 		});
 		setDialogOpen(true);
 	};
