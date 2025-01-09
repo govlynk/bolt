@@ -141,7 +141,6 @@ function DroppableColumn({ status, title, todos = [], onEditTodo, activeId, team
 
 export function KanbanBoard({ onEditTodo }) {
 	const { todos, updateTodos, fetchTodos, loading, error, cleanup } = useTodoStore();
-
 	const { teams } = useTeamStore();
 	const { selectedTeamId } = useTeamTodoStore();
 	const [activeId, setActiveId] = useState(null);
@@ -150,10 +149,9 @@ export function KanbanBoard({ onEditTodo }) {
 	useEffect(() => {
 		fetchTodos();
 		return () => {
-			const { cleanup: cleanupTodos } = useTodoStore.getState();
-			cleanupTodos();
+			cleanup();
 		};
-	}, [fetchTodos, selectedTeamId]);
+	}, [fetchTodos, selectedTeamId, cleanup]);
 
 	useEffect(() => {
 		const handleTeamChange = () => {
@@ -162,7 +160,7 @@ export function KanbanBoard({ onEditTodo }) {
 
 		window.addEventListener("teamChanged", handleTeamChange);
 		return () => window.removeEventListener("teamChanged", handleTeamChange);
-	}, [selectedTeamId]);
+	}, [selectedTeamId, fetchTodos]);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
