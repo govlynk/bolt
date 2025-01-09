@@ -391,11 +391,30 @@ const schema = a.schema({
 			allow.group("GOVLYNK_ADMIN").to(["create", "read", "update", "delete"]),
 		]),
 
+	Sprint: a
+		.model({
+			name: a.string().required(),
+			goal: a.string().required(),
+			startDate: a.datetime().required(),
+			endDate: a.datetime().required(),
+			status: a.string(),
+			position: a.integer(),
+			teamId: a.string().required(),
+			team: a.belongsTo("Team", "teamId"),
+			todos: a.hasMany("Todo", "sprintId"),
+		})
+		.authorization((allow) => [
+			allow.owner(),
+			allow.authenticated().to(["create", "read", "update"]),
+			allow.group("GOVLYNK_ADMIN").to(["create", "read", "update", "delete"]),
+		]),
+
+	// Update Todo model to include sprint relationship
 	Todo: a
 		.model({
 			title: a.string().required(),
 			description: a.string().required(),
-			status: a.enum(["TODO", "DOING", "DONE"]),
+			status: a.string(),
 			priority: a.enum(["LOW", "MEDIUM", "HIGH"]),
 			dueDate: a.datetime().required(),
 			estimatedEffort: a.float(),
@@ -406,6 +425,8 @@ const schema = a.schema({
 			assignee: a.belongsTo("User", "assigneeId"),
 			teamId: a.string().required(),
 			team: a.belongsTo("Team", "teamId"),
+			sprintId: a.string(), // Add sprint relationship
+			sprint: a.belongsTo("Sprint", "sprintId"), // Add sprint relationship
 		})
 		.authorization((allow) => [
 			allow.owner(),

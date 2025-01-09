@@ -13,6 +13,7 @@ const LoadingScreen = () => (
 );
 
 // Lazy loaded components
+const SprintScreen = lazy(() => import("../../screens/SprintScreen")); // Add Sprint Screen
 const TodoScreen = lazy(() => import("../../screens/TodoScreen"));
 
 //Sales
@@ -53,6 +54,14 @@ const AppRouter = ({ signOut }) => {
 					element={
 						<Suspense fallback={<LoadingScreen />}>
 							<TodoScreen />
+						</Suspense>
+					}
+				/>
+				<Route
+					path='sprints'
+					element={
+						<Suspense fallback={<LoadingScreen />}>
+							<SprintScreen />
 						</Suspense>
 					}
 				/>

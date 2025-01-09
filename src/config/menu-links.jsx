@@ -45,6 +45,10 @@ const salesLinks = {
 			path: "/pipeline",
 		},
 		{
+			title: "Sprints",
+			path: "/sprints",
+		},
+		{
 			title: "Calendar",
 			path: "/calendar",
 		},
