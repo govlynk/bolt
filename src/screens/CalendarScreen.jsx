@@ -1,25 +1,12 @@
 import { useState } from "react";
-import FullCalendar, { formatDate } from "@fullcalendar/react";
+import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import { Box, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
+import { Box, List, ListItem, ListItemText, Typography } from "@mui/material";
 
-const Header = ({ title, subtitle }) => {
-	return (
-		<Box mb='30px'>
-			<Typography variant='h2' color={colors.grey[100]} fontWeight='bold' sx={{ m: "0 0 5px 0" }}>
-				{title}
-			</Typography>
-			<Typography variant='h5' color={colors.greenAccent[400]}>
-				{subtitle}
-			</Typography>
-		</Box>
-	);
-};
-
-const Calendar = () => {
+const CalendarScreen = () => {
 	const [currentEvents, setCurrentEvents] = useState([]);
 
 	const handleDateClick = (selected) => {
@@ -46,18 +33,16 @@ const Calendar = () => {
 
 	return (
 		<Box m='20px'>
-			<Header title='Calendar' subtitle='Full Calendar Interactive Page' />
-
 			<Box display='flex' justifyContent='space-between'>
 				{/* CALENDAR SIDEBAR */}
-				<Box flex='1 1 20%' backgroundColor={colors.primary[400]} p='15px' borderRadius='4px'>
+				<Box flex='1 1 20%' backgroundColor='background.paper' p='15px' borderRadius='4px'>
 					<Typography variant='h5'>Events</Typography>
 					<List>
 						{currentEvents.map((event) => (
 							<ListItem
 								key={event.id}
 								sx={{
-									backgroundColor: colors.greenAccent[500],
+									backgroundColor: "primary.light",
 									margin: "10px 0",
 									borderRadius: "2px",
 								}}
@@ -66,7 +51,7 @@ const Calendar = () => {
 									primary={event.title}
 									secondary={
 										<Typography>
-											{formatDate(event.start, {
+											{new Date(event.start).toLocaleDateString("en-US", {
 												year: "numeric",
 												month: "short",
 												day: "numeric",
@@ -101,12 +86,12 @@ const Calendar = () => {
 							{
 								id: "12315",
 								title: "All-day event",
-								date: "2022-09-14",
+								date: "2024-03-14",
 							},
 							{
 								id: "5123",
 								title: "Timed event",
-								date: "2022-09-28",
+								date: "2024-03-28",
 							},
 						]}
 					/>
@@ -116,4 +101,4 @@ const Calendar = () => {
 	);
 };
 
-export default Calendar;
+export default CalendarScreen;

@@ -18,22 +18,8 @@ const TodoScreen = lazy(() => import("../../screens/TodoScreen"));
 //Sales
 const OpportunitiesScreen = lazy(() => import("../../screens/OpportunitiesScreen"));
 const PipelineScreen = lazy(() => import("../../screens/PipelineScreen"));
-<<<<<<< HEAD
 const CalendarScreen = lazy(() => import("../../screens/CalendarScreen"));
 
-=======
-//Market Positioning
-const SpendingAnalysisScreen = lazy(() => import("../../screens/SpendingAnalysisScreen"));
-const PastPerformanceScreen = lazy(() => import("../../screens/PastPerformanceScreen"));
-const CertificationScreen = lazy(() => import("../../screens/CertificationScreen"));
-//Profile
-const StrategicPositioiningScreen = lazy(() => import("../../screens/StrategicPositioiningScreen"));
-const MaturityAssessmentScreen = lazy(() => import("../../screens/MaturityAssessmentScreen"));
-const SAMRegistrationScreen = lazy(() => import("../../screens/SAMRegistrationScreen"));
-
-//Regulation
-const RegulationManagement = lazy(() => import("../../screens/RegulationManagement"));
->>>>>>> 6feb7bd0e713936b092e3afb358aaebe05462b05
 const FileBrowserScreen = lazy(() => import("../../screens/FileBrowserScreen"));
 //Admin
 const ClientSetupScreen = lazy(() => import("../../screens/ClientSetupScreen"));
@@ -58,7 +44,6 @@ const ProtectedRoute = ({ children, requiredGroups }) => {
 
 const AppRouter = ({ signOut }) => {
 	const { activeUserData } = useGlobalStore();
-	const isGovLynkAdmin = activeUserData?.isGovLynk;
 
 	return (
 		<Routes>
@@ -141,35 +126,6 @@ const AppRouter = ({ signOut }) => {
 					}
 				/>
 
-<<<<<<< HEAD
-=======
-				{/* Profile */}
-				<Route
-					path='sam'
-					element={
-						<Suspense fallback={<LoadingScreen />}>
-							<SAMRegistrationScreen />
-						</Suspense>
-					}
-				/>
-				<Route
-					path='maturity'
-					element={
-						<Suspense fallback={<LoadingScreen />}>
-							<MaturityAssessmentScreen />
-						</Suspense>
-					}
-				/>
-				<Route
-					path='far'
-					element={
-						<Suspense fallback={<LoadingScreen />}>
-							<RegulationManagement />
-						</Suspense>
-					}
-				/>
-
->>>>>>> 6feb7bd0e713936b092e3afb358aaebe05462b05
 				{/* 404 */}
 				<Route path='*' element={<NotFoundPage />} />
 			</Route>
