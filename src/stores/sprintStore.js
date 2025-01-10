@@ -33,7 +33,14 @@ export const useSprintStore = create((set, get) => ({
 	createSprint: async (sprintData) => {
 		set({ loading: true });
 		try {
-			const response = await client.models.Sprint.create(sprintData);
+			// Ensure dates are in ISO string format
+			const formattedData = {
+				...sprintData,
+				startDate: new Date(sprintData.startDate).toISOString(),
+				endDate: new Date(sprintData.endDate).toISOString(),
+			};
+
+			const response = await client.models.Sprint.create(formattedData);
 
 			set((state) => ({
 				sprints: [...state.sprints, response.data],
@@ -55,9 +62,26 @@ export const useSprintStore = create((set, get) => ({
 	updateSprint: async (id, updates) => {
 		set({ loading: true });
 		try {
+			// Ensure dates are in ISO string format
+			const formattedUpdates = {
+				...updates,
+				startDate: new Date(updates.startDate).toISOString(),
+				endDate: new Date(updates.endDate).toISOString(),
+			};
+
+			// Only include fields that are actually defined in the schema
+			const validFields = ["name", "goal", "startDate", "endDate", "status", "position", "teamId"];
+
+			const filteredUpdates = Object.keys(formattedUpdates)
+				.filter((key) => validFields.includes(key))
+				.reduce((obj, key) => {
+					obj[key] = formattedUpdates[key];
+					return obj;
+				}, {});
+
 			const response = await client.models.Sprint.update({
 				id,
-				...updates,
+				...filteredUpdates,
 			});
 
 			set((state) => ({

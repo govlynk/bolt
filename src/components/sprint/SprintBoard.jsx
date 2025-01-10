@@ -3,6 +3,7 @@ import { Box, Paper, Typography, LinearProgress, Chip, IconButton, Tooltip, useT
 import { Edit, MoreVertical, Calendar, Target } from "lucide-react";
 import { format } from "date-fns";
 import { KanbanBoard } from "../kanban/KanbanBoard";
+import { BOARD_TYPES } from "../../config/kanbanTypes";
 
 export function SprintBoard({ sprint, tasks, onEditSprint, onTaskMove }) {
 	const theme = useTheme();
@@ -99,7 +100,7 @@ export function SprintBoard({ sprint, tasks, onEditSprint, onTaskMove }) {
 				</Box>
 
 				{/* Kanban Board */}
-				<KanbanBoard items={tasks} onItemMove={onTaskMove} type='sprint' />
+				<KanbanBoard items={tasks} onItemMove={onTaskMove} type={BOARD_TYPES.SPRINT} />
 			</Paper>
 		</Box>
 	);

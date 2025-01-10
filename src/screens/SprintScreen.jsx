@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Typography, Alert, Container, Tabs, Tab, useTheme } from "@mui/material";
 import { Plus, Repeat2 } from "lucide-react";
-
 import { useSprintStore } from "../stores/sprintStore";
 import { useTodoStore } from "../stores/todoStore";
-import { useTeamStore } from "../stores/teamStore";
 import { useGlobalStore } from "../stores/globalStore";
 import { SprintDialog } from "../components/sprint/SprintDialog";
 import { SprintBoard } from "../components/sprint/SprintBoard";
@@ -14,27 +12,34 @@ export default function SprintScreen() {
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [editSprint, setEditSprint] = useState(null);
 	const [activeTab, setActiveTab] = useState(0);
-
 	const { sprints, loading, error, fetchSprints, createSprint, updateSprint, moveTaskBetweenSprints } =
 		useSprintStore();
-
 	const { todos, updateTodo } = useTodoStore();
 	const { activeCompanyId, activeTeamId } = useGlobalStore();
 
+	// Fetch sprints when team changes or component mounts
 	useEffect(() => {
 		if (activeTeamId) {
 			fetchSprints(activeTeamId);
+			return () => {
+				// Cleanup subscription when component unmounts
+				useSprintStore.getState().cleanup();
+			};
 		}
 	}, [activeTeamId, fetchSprints]);
 
 	const handleCreateSprint = async (sprintData) => {
 		try {
-			await createSprint({
+			const newSprint = await createSprint({
 				...sprintData,
 				teamId: activeTeamId,
 			});
+			// Refresh sprints list after creating new sprint
+			await fetchSprints(activeTeamId);
+			return newSprint;
 		} catch (err) {
 			console.error("Error creating sprint:", err);
+			throw err;
 		}
 	};
 
@@ -45,25 +50,41 @@ export default function SprintScreen() {
 
 	const handleUpdateSprint = async (sprintData) => {
 		try {
-			await updateSprint(sprintData.id, sprintData);
+			const updatedSprint = await updateSprint(sprintData.id, sprintData);
+			// Refresh sprints list after updating sprint
+			await fetchSprints(activeTeamId);
+			return updatedSprint;
 		} catch (err) {
 			console.error("Error updating sprint:", err);
+			throw err;
 		}
 	};
 
 	const handleTaskMove = async (taskId, newStatus, sprintId) => {
 		try {
-			await updateTodo(taskId, { status: newStatus });
+			const updatedTodo = await updateTodo(taskId, { status: newStatus });
 			if (sprintId) {
 				await moveTaskBetweenSprints(taskId, null, sprintId);
 			}
+			return updatedTodo;
 		} catch (err) {
 			console.error("Error moving task:", err);
+			throw err;
 		}
 	};
 
-	const activeSprints = sprints.filter((sprint) => sprint.status === "ACTIVE");
-	const completedSprints = sprints.filter((sprint) => sprint.status === "COMPLETED");
+	// Filter and sort sprints by status and date
+	const activeSprints = sprints
+		.filter((sprint) => sprint.status === "ACTIVE")
+		.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+
+	const planningSprints = sprints
+		.filter((sprint) => sprint.status === "PLANNING")
+		.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+
+	const completedSprints = sprints
+		.filter((sprint) => sprint.status === "COMPLETED")
+		.sort((a, b) => new Date(b.endDate) - new Date(a.endDate));
 
 	if (!activeTeamId) {
 		return (
@@ -117,6 +138,7 @@ export default function SprintScreen() {
 			{/* Tabs */}
 			<Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)} sx={{ mb: 3 }}>
 				<Tab label={`Active Sprints (${activeSprints.length})`} />
+				<Tab label={`Planning (${planningSprints.length})`} />
 				<Tab label={`Completed Sprints (${completedSprints.length})`} />
 			</Tabs>
 
@@ -124,6 +146,16 @@ export default function SprintScreen() {
 			<Box>
 				{activeTab === 0
 					? activeSprints.map((sprint) => (
+							<SprintBoard
+								key={sprint.id}
+								sprint={sprint}
+								tasks={todos.filter((todo) => todo.sprintId === sprint.id)}
+								onEditSprint={handleEditSprint}
+								onTaskMove={handleTaskMove}
+							/>
+					  ))
+					: activeTab === 1
+					? planningSprints.map((sprint) => (
 							<SprintBoard
 								key={sprint.id}
 								sprint={sprint}

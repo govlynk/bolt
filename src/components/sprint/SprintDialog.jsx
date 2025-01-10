@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
 	Dialog,
 	DialogTitle,
@@ -24,9 +24,32 @@ export function SprintDialog({ open, onClose, onSave, editSprint = null }) {
 		startDate: new Date(),
 		endDate: addDays(new Date(), 14), // Default 2-week sprint
 		status: "PLANNING",
-		...editSprint,
 	});
 	const [error, setError] = useState(null);
+
+	// Update form data when editSprint changes or dialog opens
+	useEffect(() => {
+		if (open) {
+			if (editSprint) {
+				setFormData({
+					...editSprint,
+					// Ensure dates are Date objects
+					startDate: new Date(editSprint.startDate),
+					endDate: new Date(editSprint.endDate),
+				});
+			} else {
+				// Reset to defaults for new sprint
+				setFormData({
+					name: "",
+					goal: "",
+					startDate: new Date(),
+					endDate: addDays(new Date(), 14),
+					status: "PLANNING",
+				});
+			}
+			setError(null);
+		}
+	}, [open, editSprint]);
 
 	const handleChange = (field) => (event) => {
 		setFormData((prev) => ({
@@ -61,7 +84,7 @@ export function SprintDialog({ open, onClose, onSave, editSprint = null }) {
 
 		onSave({
 			...formData,
-			id: editSprint?.id || crypto.randomUUID(),
+			id: editSprint?.id,
 		});
 		onClose();
 	};

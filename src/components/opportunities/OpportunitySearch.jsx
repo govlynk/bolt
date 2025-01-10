@@ -8,7 +8,7 @@ import { useOpportunityStore } from "../../stores/opportunityStore";
 export function OpportunitySearch() {
 	const { activeCompanyId } = useGlobalStore();
 	const { userCompanies } = useUserCompanyStore();
-	const { setOpportunities, fetchOpportunities } = useOpportunityStore();
+	const { setOpportunities } = useOpportunityStore();
 	const activeCompany = userCompanies.find((c) => c.id === activeCompanyId);
 
 	// Construct search parameters
@@ -17,14 +17,23 @@ export function OpportunitySearch() {
 			return null;
 		}
 
-		const date = new Date();
-		const endDate = `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
-		const startDate = `${date.getMonth() - 2}/01/${date.getFullYear()}`;
+		const endDate = new Date();
+		const startDate = new Date();
+		startDate.setMonth(endDate.getMonth() - 2);
+		startDate.setDate(1);
+
+		// Handle year rollover if needed
+		if (startDate.getMonth() > endDate.getMonth()) {
+			startDate.setFullYear(endDate.getFullYear() - 1);
+		}
+
+		const formattedEndDate = `${endDate.getMonth() + 1}/${endDate.getDate()}/${endDate.getFullYear()}`;
+		const formattedStartDate = `${startDate.getMonth() + 1}/${startDate.getDate()}/${startDate.getFullYear()}`;
 
 		return {
 			naicsCode: activeCompany.naicsCode.join(","),
-			postedFrom: startDate,
-			postedTo: endDate,
+			postedFrom: formattedStartDate,
+			postedTo: formattedEndDate,
 			limit: "10",
 		};
 	}, [activeCompany]);

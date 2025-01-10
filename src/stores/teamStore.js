@@ -29,7 +29,7 @@ export const useTeamStore = create((set, get) => ({
 
 		set({ loading: true });
 		try {
-			// Set up subscription for real-time updates
+			// Set up subscription for real-time updates with unique operation ID
 			const subscription = client.models.Team.observeQuery({
 				filter: { companyId: { eq: companyId } },
 			}).subscribe({
@@ -37,26 +37,42 @@ export const useTeamStore = create((set, get) => ({
 					// Fetch members for each team
 					const teamsWithMembers = await Promise.all(
 						items.map(async (team) => {
-							const membersResponse = await client.models.TeamMember.list({
-								filter: { teamId: { eq: team.id } },
-							});
+							try {
+								const membersResponse = await client.models.TeamMember.list({
+									filter: { teamId: { eq: team.id } },
+								});
 
-							const membersWithContacts = await Promise.all(
-								(membersResponse?.data || []).map(async (member) => {
-									const contactResponse = await client.models.Contact.get({
-										id: member.contactId,
-									});
-									return {
-										...member,
-										contact: contactResponse?.data || null,
-									};
-								})
-							);
+								const membersWithContacts = await Promise.all(
+									(membersResponse?.data || []).map(async (member) => {
+										try {
+											const contactResponse = await client.models.Contact.get({
+												id: member.contactId,
+											});
+											return {
+												...member,
+												contact: contactResponse?.data || null,
+											};
+										} catch (err) {
+											console.warn(`Error fetching contact for member ${member.id}:`, err);
+											return {
+												...member,
+												contact: null,
+											};
+										}
+									})
+								);
 
-							return {
-								...team,
-								members: membersWithContacts,
-							};
+								return {
+									...team,
+									members: membersWithContacts,
+								};
+							} catch (err) {
+								console.warn(`Error fetching members for team ${team.id}:`, err);
+								return {
+									...team,
+									members: [],
+								};
+							}
 						})
 					);
 

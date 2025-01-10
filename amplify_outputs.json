@@ -1069,6 +1069,13 @@
               "isRequired": false,
               "attributes": []
             },
+            "workload": {
+              "name": "workload",
+              "isArray": false,
+              "type": "Int",
+              "isRequired": false,
+              "attributes": []
+            },
             "team": {
               "name": "team",
               "isArray": false,

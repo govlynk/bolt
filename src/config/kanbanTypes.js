@@ -3,6 +3,7 @@ export const BOARD_TYPES = {
 	TODO: "todo",
 	PROJECT: "project",
 	PIPELINE: "opportunities",
+	SPRINT: "sprint",
 };
 
 export const DEFAULT_BOARDS = {
@@ -85,6 +86,25 @@ export const DEFAULT_BOARDS = {
 				title: "Done",
 				limit: 4,
 				color: "#6ddba6",
+				items: [],
+			},
+		},
+	},
+	[BOARD_TYPES.SPRINT]: {
+		columns: {
+			TODO: {
+				id: "TODO",
+				title: "To Do",
+				items: [],
+			},
+			DOING: {
+				id: "DOING",
+				title: "In Progress",
+				items: [],
+			},
+			DONE: {
+				id: "DONE",
+				title: "Done",
 				items: [],
 			},
 		},

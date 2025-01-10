@@ -2,21 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Box, Container, Typography, Alert } from "@mui/material";
 import { KanbanBoard } from "../components/pipeline/KanbanBoard";
 import { useOpportunityStore } from "../stores/opportunityStore";
-import { useUserCompanyStore } from "../stores/userCompanyStore";
+import { useGlobalStore } from "../stores/globalStore";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function PipelineScreen() {
 	const [loading, setLoading] = useState(false);
 	const queryClient = useQueryClient();
 	const { savedOpportunities, moveOpportunity, fetchSavedOpportunities } = useOpportunityStore();
-	const { getActiveCompany } = useUserCompanyStore();
-	const activeCompany = getActiveCompany();
+	const { activeCompanyId } = useGlobalStore.getState();
 
 	useEffect(() => {
-		if (activeCompany?.id) {
+		if (activeCompanyId) {
 			fetchSavedOpportunities();
 		}
-	}, [activeCompany?.id]);
+	}, [activeCompanyId]);
 
 	const handleOpportunityMove = async (opportunityId, newStatus) => {
 		setLoading(true);
@@ -40,7 +39,7 @@ export default function PipelineScreen() {
 		}
 	};
 
-	if (!activeCompany) {
+	if (!activeCompanyId) {
 		return (
 			<Box sx={{ p: 3 }}>
 				<Alert severity='warning'>Please select a company to view pipeline</Alert>

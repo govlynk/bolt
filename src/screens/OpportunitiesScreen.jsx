@@ -3,7 +3,8 @@ import { Box, Typography, Tabs, Tab, Alert } from "@mui/material";
 import { OpportunityList } from "../components/opportunities/OpportunityList";
 import { OpportunitySearch } from "../components/opportunities/OpportunitySearch";
 import { useOpportunityStore } from "../stores/opportunityStore";
-import { useUserCompanyStore } from "../stores/userCompanyStore";
+import { useGlobalStore } from "../stores/globalStore";
+
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function OpportunitiesScreen() {
@@ -21,15 +22,14 @@ export default function OpportunitiesScreen() {
 		moveToSaved,
 		resetStore,
 	} = useOpportunityStore();
-	const { getActiveCompany } = useUserCompanyStore();
-	const activeCompany = getActiveCompany();
+	const { activeCompanyId } = useGlobalStore.getState();
 
 	useEffect(() => {
-		if (activeCompany?.id) {
+		if (activeCompanyId) {
 			initializeStore();
 		}
 		return () => resetStore();
-	}, [activeCompany?.id]);
+	}, [activeCompanyId]);
 
 	const handleTabChange = (event, newValue) => {
 		setActiveTab(newValue);
@@ -81,7 +81,7 @@ export default function OpportunitiesScreen() {
 		}
 	};
 
-	if (!activeCompany) {
+	if (!activeCompanyId) {
 		return (
 			<Box sx={{ p: 3 }}>
 				<Alert severity='warning'>Please select a company to view opportunities</Alert>
