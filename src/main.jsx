@@ -4,6 +4,8 @@ import { Amplify } from "aws-amplify";
 import { Authenticator } from "@aws-amplify/ui-react";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "./context/ThemeContext";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 // import "./index.css";
@@ -21,8 +23,10 @@ createRoot(rootElement).render(
 		<BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
 			<Authenticator.Provider>
 				<ThemeProvider>
-					<CssBaseline />
-					<App />
+					<LocalizationProvider dateAdapter={AdapterDateFns}>
+						<CssBaseline />
+						<App />
+					</LocalizationProvider>
 				</ThemeProvider>
 			</Authenticator.Provider>
 		</BrowserRouter>

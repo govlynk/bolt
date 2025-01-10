@@ -98,15 +98,19 @@ export function SprintDialog({ open, onClose, onSave, editSprint = null }) {
 					<Box sx={{ display: "flex", gap: 2 }}>
 						<DatePicker
 							label='Start Date'
+							slotProps={{
+								textField: { fullWidth: true },
+							}}
 							value={formData.startDate}
 							onChange={handleDateChange("startDate")}
-							renderInput={(params) => <TextField {...params} fullWidth />}
 						/>
 						<DatePicker
 							label='End Date'
+							slotProps={{
+								textField: { fullWidth: true },
+							}}
 							value={formData.endDate}
 							onChange={handleDateChange("endDate")}
-							renderInput={(params) => <TextField {...params} fullWidth />}
 						/>
 					</Box>
 

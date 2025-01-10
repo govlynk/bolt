@@ -102,23 +102,13 @@ export function EventDialog({ open, onClose, onSave, initialSlot }) {
 
 					<Box sx={{ display: "flex", gap: 2 }}>
 						<TextField
-							type='datetime-local'
 							label='Start Time'
 							value={eventData.start}
 							onChange={handleChange("start")}
-							InputLabelProps={{ shrink: true }}
 							fullWidth
 							required
 						/>
-						<TextField
-							type='datetime-local'
-							label='End Time'
-							value={eventData.end}
-							onChange={handleChange("end")}
-							InputLabelProps={{ shrink: true }}
-							fullWidth
-							required
-						/>
+						<TextField label='End Time' value={eventData.end} onChange={handleChange("end")} fullWidth required />
 					</Box>
 
 					<Box sx={{ display: "flex", gap: 2 }}>
