@@ -31,11 +31,11 @@ const TestScreen = lazy(() => import("../../screens/TestScreen"));
 const ProtectedRoute = ({ children, requiredGroups }) => {
 	const { activeUserData } = useGlobalStore();
 
-	// Add null check for requiredGroups and activeUserData.groups
-	const isAllowed =
-		requiredGroups && activeUserData?.groups
-			? requiredGroups.some((requiredGroup) => activeUserData.groups.includes(requiredGroup))
-			: false;
+	// Memoize access check
+	const isAllowed = useMemo(() => {
+		if (!requiredGroups || !activeUserData?.groups) return false;
+		return requiredGroups.some((requiredGroup) => activeUserData.groups.includes(requiredGroup));
+	}, [requiredGroups, activeUserData?.groups]);
 
 	if (!isAllowed) {
 		return <Navigate to='/' />;

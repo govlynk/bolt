@@ -2,22 +2,25 @@ import React, { useState, useEffect } from "react";
 import { Box, Container, Alert } from "@mui/material";
 import { TodoDialog } from "../components/toDo/TodoDialog";
 import { TodoHeader } from "../components/toDo/TodoHeader";
-import { KanbanBoard } from "../components/toDo/KanbanBoard";
+import { KanbanBoard } from "../components/kanban/KanbanBoard";
 import { useTeamStore } from "../stores/teamStore";
+import { useSprintStore } from "../stores/sprintStore";
 import { useGlobalStore } from "../stores/globalStore";
 
 function TodoScreen() {
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [editTodo, setEditTodo] = useState(null);
 	const { activeCompanyId } = useGlobalStore();
-	const { fetchTeams } = useTeamStore();
+	const { fetchTeams, teams } = useTeamStore();
+	const { fetchSprints } = useSprintStore();
 
 	// Fetch teams when company changes
 	useEffect(() => {
 		if (activeCompanyId) {
 			fetchTeams(activeCompanyId);
+			fetchSprints(activeCompanyId);
 		}
-	}, [activeCompanyId, fetchTeams]);
+	}, [activeCompanyId, fetchTeams, fetchSprints]);
 
 	const handleAddClick = () => {
 		setEditTodo(null);

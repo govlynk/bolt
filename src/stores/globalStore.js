@@ -115,6 +115,7 @@ export const useGlobalStore = create(
 		}),
 		{
 			name: "global-store",
+			version: 1,
 			partialize: (state) => ({
 				activeUserId: state.activeUserId,
 				activeUserData: state.activeUserData,

@@ -71,7 +71,7 @@ export function TodoDialog({ open, onClose, editTodo = null }) {
 			setFormData({
 				...initialFormState,
 				position: maxPosition + 1,
-				assigneeId: user?.sub,
+				assigneeId: activeUserData?.userId,
 				teamId: selectedTeamId === "all" ? teams[0]?.id || "" : selectedTeamId,
 			});
 		}

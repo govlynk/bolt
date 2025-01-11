@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
 	Dialog,
 	DialogTitle,
@@ -15,17 +15,29 @@ import {
 	Alert,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { addDays } from "date-fns";
+import { addDays, isBefore } from "date-fns";
+import { SPRINT_CONFIG } from "../../config/sprintConfig";
+import { useSprintStore } from "../../stores/sprintStore";
 
 export function SprintDialog({ open, onClose, onSave, editSprint = null }) {
 	const [formData, setFormData] = useState({
 		name: "",
 		goal: "",
-		startDate: new Date(),
-		endDate: addDays(new Date(), 14), // Default 2-week sprint
+		startDate: null,
+		endDate: null,
 		status: "PLANNING",
 	});
 	const [error, setError] = useState(null);
+
+	// Find the latest sprint's end date
+	const findLatestSprintEndDate = useCallback(() => {
+		const { sprints } = useSprintStore.getState();
+		if (!sprints?.length) return null;
+
+		return sprints
+			.filter((sprint) => isBefore(new Date(), new Date(sprint.endDate)))
+			.sort((a, b) => new Date(b.endDate) - new Date(a.endDate))[0]?.endDate;
+	}, []);
 
 	// Update form data when editSprint changes or dialog opens
 	useEffect(() => {
@@ -33,23 +45,25 @@ export function SprintDialog({ open, onClose, onSave, editSprint = null }) {
 			if (editSprint) {
 				setFormData({
 					...editSprint,
-					// Ensure dates are Date objects
 					startDate: new Date(editSprint.startDate),
 					endDate: new Date(editSprint.endDate),
 				});
 			} else {
+				const latestEndDate = findLatestSprintEndDate();
+				const startDate = latestEndDate ? new Date(latestEndDate) : new Date();
+
 				// Reset to defaults for new sprint
 				setFormData({
 					name: "",
 					goal: "",
-					startDate: new Date(),
-					endDate: addDays(new Date(), 14),
+					startDate: startDate,
+					endDate: addDays(startDate, SPRINT_CONFIG.defaultDuration),
 					status: "PLANNING",
 				});
 			}
 			setError(null);
 		}
-	}, [open, editSprint]);
+	}, [open, editSprint, findLatestSprintEndDate]);
 
 	const handleChange = (field) => (event) => {
 		setFormData((prev) => ({
@@ -123,17 +137,22 @@ export function SprintDialog({ open, onClose, onSave, editSprint = null }) {
 							label='Start Date'
 							slotProps={{
 								textField: { fullWidth: true },
+								field: { clearable: false },
 							}}
 							value={formData.startDate}
 							onChange={handleDateChange("startDate")}
+							minDate={new Date()}
 						/>
 						<DatePicker
 							label='End Date'
 							slotProps={{
 								textField: { fullWidth: true },
+								field: { clearable: false },
 							}}
 							value={formData.endDate}
 							onChange={handleDateChange("endDate")}
+							minDate={addDays(formData.startDate, SPRINT_CONFIG.minDuration)}
+							maxDate={addDays(formData.startDate, SPRINT_CONFIG.maxDuration)}
 						/>
 					</Box>
 

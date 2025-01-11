@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { generateClient } from "aws-amplify/data";
+import { useGlobalStore } from "./globalStore";
 
 const client = generateClient();
 
@@ -10,12 +11,19 @@ export const useSprintStore = create((set, get) => ({
 	error: null,
 
 	fetchSprints: async (teamId) => {
+		if (!teamId) {
+			console.warn("No team ID provided to fetchSprints");
+			return;
+		}
+
 		set({ loading: true });
 		try {
+			console.log("Fetching sprints for team:", teamId);
 			const response = await client.models.Sprint.list({
 				filter: { teamId: { eq: teamId } },
 			});
 
+			console.log("Fetched sprints:", response.data);
 			set({
 				sprints: response.data || [],
 				loading: false,
@@ -33,11 +41,17 @@ export const useSprintStore = create((set, get) => ({
 	createSprint: async (sprintData) => {
 		set({ loading: true });
 		try {
+			const { activeTeamId } = useGlobalStore.getState();
+			if (!activeTeamId) {
+				throw new Error("No active team selected");
+			}
+
 			// Ensure dates are in ISO string format
 			const formattedData = {
 				...sprintData,
 				startDate: new Date(sprintData.startDate).toISOString(),
 				endDate: new Date(sprintData.endDate).toISOString(),
+				teamId: activeTeamId,
 			};
 
 			const response = await client.models.Sprint.create(formattedData);
