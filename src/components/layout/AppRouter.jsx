@@ -15,6 +15,7 @@ const LoadingScreen = () => (
 // Lazy loaded components
 const SprintScreen = lazy(() => import("../../screens/SprintScreen")); // Add Sprint Screen
 const TodoScreen = lazy(() => import("../../screens/TodoScreen"));
+const SAMRegistrationScreen = lazy(() => import("../../screens/SAMRegistrationScreen"));
 
 //Sales
 const OpportunitiesScreen = lazy(() => import("../../screens/OpportunitiesScreen"));
@@ -62,6 +63,14 @@ const AppRouter = ({ signOut }) => {
 					element={
 						<Suspense fallback={<LoadingScreen />}>
 							<SprintScreen />
+						</Suspense>
+					}
+				/>
+				<Route
+					path='sam'
+					element={
+						<Suspense fallback={<LoadingScreen />}>
+							<SAMRegistrationScreen />
 						</Suspense>
 					}
 				/>

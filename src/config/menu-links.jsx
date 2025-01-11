@@ -27,6 +27,10 @@ const profileLinks = {
 			title: "File Browser",
 			path: "/company-files",
 		},
+		{
+			title: "SAM Registration",
+			path: "/sam",
+		},
 	],
 };
 
